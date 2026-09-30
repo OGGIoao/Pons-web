@@ -1,121 +1,108 @@
-# pons-web · 脑桥训练站
+# 脑桥 · Pons 训练站
 
-Pons 卡片系统的纯前端训练站。**导航/进度框架 = 图书馆卡片柜，阅读纸面 = 侦探档案**。
+> **大脑里负责在不同区域之间传递信号的桥梁。**
+> Pons 做同样的事——在"意图"和"代码"之间、在"一个问题"和"一个思路"之间架桥。
 
-## 快速开始
+[![在线体验](https://img.shields.io/badge/在线体验-oggioao.github.io%2FPons--web-b3261e)](https://oggioao.github.io/Pons-web/)
+[![内容仓库](https://img.shields.io/badge/内容仓库-OGGIoao%2FPons-1e6b46)](https://github.com/OGGIoao/Pons)
+
+一套同时练**"翻译"和"思维"**的算法卡片系统的 Web 训练站。
+卡片不教 API，教的是"看到什么问题 → 想起哪个模式"的条件反射：
+每张卡把一个经典算法模式包装成一张**侦探档案**——先给案件现场（真实问题），
+再给一个"思维跳板"，最后逼你把它**翻译成代码**并当场跑过自测。
+
+![证物照片示例](https://raw.githubusercontent.com/OGGIoao/Pons/master/assets/cards/104-turing-machine.png)
+
+---
+
+## 打开即玩
+
+**[https://oggioao.github.io/Pons-web/](https://oggioao.github.io/Pons-web/)** — 纯前端静态站，无需注册，进度存在你自己的浏览器里。
+
+### 三个角色，三种玩法
+
+```
+🗄️ 卡片柜（首页）          🗂️ 侦探档案（卡页）           ✍️ 译电台（练习）
+┌──────────────┐          ┌──────────────────┐          ┌────────────────┐
+│ 11 个黄铜抽屉 │  拉开 →   │ 阶段一：案件现场   │  想 10 分钟  │ 草稿纸：先写伪代码│
+│ 邮票=插画     │          │ 阶段二：提示链     │  ↓ 再拆开   │ 练习台：真跑 Python│
+│ 印章=通关状态 │          │ 阶段三：核心洞察   │            │ 发送译电 → 回执    │
+└──────────────┘          │ 阶段四：参考实现   │            │ 过了自动盖章      │
+                          │   + 迁移案例       │            └────────────────┘
+                          └──────────────────┘
+```
+
+- **拆档案**：阶段二三四折叠防偷看——纪律是"先自己想 10 分钟"（页面上真有计时器）
+- **译电**：练习台在浏览器里跑真 Python（Pyodide/Web Worker），代码自动存档，通过全部断言自动盖「已通关」印章
+- **迁移**：每张卡附 2-3 个真实场景案例（力扣/洛谷/POJ 题 + 工程实践），点开有**实测可运行**的解答代码对照
+
+## 快速开始（本地开发）
 
 ```bash
 npm install
-npm run dev        # 开发服务器（自动解析内容 + 热更新）
-npm run build      # 产物在 dist/，可丢到 GitHub Pages
+npm run dev      # 开发服务器（自动解析内容 + 热更新）
+npm run build    # 产物在 dist/；内容管线会先做结构校验
+npm run preview  # 本地预览构建产物
 ```
 
-## 防人肉维护架构（重要，改动前先读）
+> 内容默认读 sibling 目录 `../pons-clone`（[内容仓库](https://github.com/OGGIoao/Pons) 的克隆），
+> 可用 `PONS_CONTENT_DIR` 环境变量指向任意 patterns 目录。
+
+## 双仓库结构
 
 ```
-../pons-clone/patterns/*.md   ← 内容唯一事实来源（markdown 仓库）
-            │  scripts/build-cards.mjs（vite 插件在 dev/build 时自动执行）
-            ▼
-    src/generated/cards.json   ← 自动生成，已 gitignore，禁止手改
-            │
-            ▼
-        React UI（只读 cards.json 和 ProgressRepository）
+OGGIoao/Pons        ← 内容：卡片 markdown + 迁移案例 + 插画（单一事实来源）
+       │
+       │  build-cards.mjs（CI / dev / build 时自动执行）
+       ▼
+OGGIoao/Pons-web    ← 本站：管线 + React UI（只读生成物）
 ```
 
-- **加新卡**：只往 `../pons-clone/patterns/` 丢 `.md`（遵守 `_template.md` 结构），
-  刷新页面即出现。零登记、零同步。
-- **配插画**：往 `../pons-clone/assets/cards/` 丢 `<卡id>.png`（如 `001-catalan.png`），
-  构建时自动复制到 `public/cards/` 并挂载到抽屉邮票位 + 卡页拍立得位。缺图不报错。
-- **结构契约**：每张卡必须有「🚩 阶段一」正文 + 恰好 3 个 `<details>`（阶段二三四），
-  解析失败会报错退出，半成品进不了站点。
-- **内容目录**：默认读 `../pons-clone/patterns`，可用 `PONS_CONTENT_DIR` 环境变量覆盖。
+**改内容永远只动 Pons 仓库**；本站仓库只关心展示和交互。
+push 任一侧都会触发 Pages 自动重新构建部署。
 
-## 迁移案例库（cases/*.md）
+## 内容协作（加东西 = 丢文件，零登记）
 
-卡页底部「迁移案例」区块的数据源，与卡片 markdown 同库独立目录
-（`../pons-clone/cases/`），管线按 frontmatter 里的卡片编号自动聚合、双向链接，
-**加案例 = 丢一个文件，不动任何卡片**。
+内容契约全部由管线在构建期强制执行，违反即构建失败：
 
-格式契约（每条违反即构建失败）：
+| 你要加什么 | 做什么 | 契约 |
+|---|---|---|
+| 新卡片 | 往 `patterns/` 丢 `.md`（照 `_template.md`） | 阶段一正文 + 恰好 3 个 `<details>`；🧪 自测用例 + 参考实现会被自动提取成练习台 |
+| 迁移案例 | 往 `cases/` 丢 `.md` | frontmatter 声明 `cards: [编号]` 自动双向挂载；场景/信号/桥接各 ≥20 字符；**解答代码必填**，Python 解答当场编译校验 |
+| 插画 | 往 `assets/cards/` 丢 `<卡id>.png` | 约定式挂载：抽屉邮票位 + 卡页拍立得位，缺图优雅降级 |
+| 改高亮配色 | 只动 `pons-web/src/theme.css` | `--tok-*` 七个变量是唯一出处；明暗两套纸面各覆写一次值，token 映射只有一份 |
 
-```markdown
----
-title: 案例标题
-cards: [004]        # 关联的卡编号，可多张；引用了不存在的编号会报错
-source: 真实出处    # 必填——拒绝"某大厂"式泛泛而谈
-url: https://...    # 可选
----
+卡片清单、案例关联、骨架提取全部是 glob 自动发现——**不存在需要人工同步的清单**。
 
-## 场景
-（什么真实场景撞上这张卡，≥20 字符）
+## 架构要点
 
-## 信号
-（怎么认出它在考这张卡，≥20 字符）
+- **内容管线** `scripts/build-cards.mjs`：markdown → `cards.json`。练习台骨架只取顶层 `def` 签名，且每张卡的骨架都要过一遍 Python 编译——半成品进不了站点
+- **进度层** `src/data/repository.ts` 的 `ProgressRepository` 接口：现在是 localStorage 实现，将来上后端只需新实现一个 `ApiRepository`，改 `src/data/index.ts` 一行
+- **语法高亮 SSOT**：highlight.js（markdown）与 CodeMirror（练习台）消费同一份 `--tok-*` 调色板
+- **路由**：hash 路由（`#/card/001?open=3,4`），静态托管友好，支持深链直达某张卡的某个阶段
 
-## 桥接
-（怎么把卡的思路套过去，≥20 字符）
+## 部署
 
-## 解答
-```python
-# 可运行的解答代码——Python 解答会在构建时被当场编译校验，
-# 跑不过的解答进不了站点。选题优先信息竞赛 / LeetCode 这类有标准题面的题目。
-```
-```
+GitHub Actions 全自动（`.github/workflows/deploy.yml`）：
 
-- 「场景 / 信号 / 桥接」三段缺一或过短（<20 字符）都会让构建直接失败，
-  用可执行契约挡住泛泛而谈。
-- 「解答」必填且必须含一个代码块；非 Python 语言按纯文本渲染（不高亮报错）。
-- 案例按标题拼音排序后挂载到对应卡页，同一案例可挂多张卡；
-  展开案例即可看到解答代码（与卡片代码块同一套高亮）。
-
-## 语法高亮调色板（SSOT）
-
-token → 颜色的**映射只此一份**（`.hljs-*` / CodeMirror 都只消费变量），
-调色板"值"按纸面分两套，都在 `src/theme.css` 里：
-
-- `:root` 的 `--tok-kw / --tok-str / --tok-num / --tok-fn / --tok-cm /
-  --tok-builtin / --tok-attr` 七个变量 = **浅色纸面**默认值（练习台编辑器）；
-- `.doc .md pre` 里同名的七个变量 = **暗色代码块**（markdown / 案例解答代码）
-  的覆写值——改暗色块颜色只改这一处，绝不按 `.hljs-xxx` 选择器重写。
-
-明暗两套纸面上的同一代码永远保持各自可读，又永远只有一份 token 映射。
-
-## 数据层
-
-UI 只依赖 `src/data/repository.ts` 的 `ProgressRepository` 接口，
-当前实现是 `localRepository`（localStorage，key: `pons.progress.v1`）。
-将来上后端：新实现一个 `ApiRepository`，改 `src/data/index.ts` 一行即可。
+1. push 到 `main` → 并行检出**本站 + 内容仓库**两个仓库
+2. `npm ci && GH_PAGES=true npm run build`（内容管线 + `/Pons-web/` 子路径 base）
+3. 产物上传 GitHub Pages，约 1 分钟后线上生效
 
 ## 目录
 
 ```
-scripts/build-cards.mjs   内容管线（解析 + 结构校验 + 生成 cards.json）
+scripts/build-cards.mjs   内容管线（解析 + 结构/编译校验 + 生成 cards.json）
 src/data/                 类型 + 进度仓库接口 + localStorage 实现
-src/pages/HomePage.tsx    卡片柜抽屉墙（按 seq 分核心/跨界两排）
-src/pages/CardPage.tsx    侦探档案卡页（证物袋防偷看 + 10 分钟计时器 + 借阅登记）
-src/theme.css             全部视觉（深木黄铜柜 + 牛皮纸案卷）
+src/pages/HomePage.tsx    卡片柜抽屉墙（核心/跨界两排）
+src/pages/CardPage.tsx    侦探档案卡页（防偷看折叠 + 计时器 + 案例 + 练习台挂载）
+src/components/           Markdown 渲染、案例列表、CodeMirror 练习台、Pyodide Runner
+src/theme.css             全部视觉（深木黄铜柜 + 牛皮纸案卷 + --tok-* 调色板）
+.github/workflows/        Pages 自动部署
 ```
-
-## 已实现功能
-
-- 🗄️ **卡片柜首页**：核心 7 抽 + 跨界 4 抽，黄铜拉手，抽出卡片带插画邮票、三围分数和印章状态
-- 🗂️ **侦探档案卡页**：牛皮纸档案袋 + 证物袋式防偷看折叠（阶段二三四），markdown 全文渲染
-- ✍️ **译电草稿纸**（阶段三）：先写伪代码，防抖自动存档
-- 🧪 **译电练习台**（阶段四）：浏览器内真跑 Python（Pyodide/Web Worker），5 秒熔断防死循环，通过自测自动盖章「已通关」；代码自动存档下次接着写
-- ⏳ **10 分钟思考计时器** + 深链直达阶段（`#/card/001?open=3,4`）
-- 🎨 **全站语法高亮**：markdown 代码块（highlight.js）与练习台编辑器（CodeMirror）
-  共用 theme.css 的 `--tok-*` 调色板，改一处全站同色
-- 🧳 **迁移案例区块**（阶段四）：真实场景案例库，构建期自动聚合，来源必填
-- 🖼️ **插画约定式挂载**：`assets/cards/<卡id>.png` 存在即上抽屉邮票位 + 卡页拍立得位
-
-## 技术备注
-
-- Pyodide 走 unpkg CDN（jsdelivr 在本机网络不可达，实测 2026-09）；首次"发送译电"时懒加载，浏览器缓存后秒开
-- 练习台素材（自测用例 + 代码骨架）构建期从卡片 markdown 零复制提取；
-  骨架只取顶层 `def` 签名 + import，并会过一遍 Python 编译校验，编译不过直接构建失败
-- 练习台骨架提取对"参考实现"里的多行签名、注释行、嵌套函数均已免疫
 
 ## 已知待办
 
+- bundle 超 500kB（highlight.js 全量引入所致），可后续按路由 code-split
+- Pyodide 走 unpkg CDN（jsdelivr 在某些网络不可达），首次"发送译电"需几秒加载
 - 图灵机卡的动画在 `__name__` 守卫下静态展示，自测不受影响
-- bundle 超 500kB 警告（highlight.js 全量引入所致），可后续按路由 code-split，不紧急

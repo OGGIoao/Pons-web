@@ -15,5 +15,7 @@ function ponsCards() {
 }
 
 export default defineConfig({
+  // GitHub Pages 项目页挂在 /Pons-web/ 子路径；本地开发仍用根路径
+  base: process.env.GH_PAGES ? '/Pons-web/' : '/',
   plugins: [react(), tailwindcss(), ponsCards()],
 })

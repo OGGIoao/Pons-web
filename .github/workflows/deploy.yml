@@ -1,0 +1,64 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同时只有一个部署在跑，新的推送会顶掉旧的
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 站点工程
+      - uses: actions/checkout@v4
+        with:
+          path: pons-web
+
+      # 内容仓库（卡片/案例/插画的单一事实来源）
+      - uses: actions/checkout@v4
+        with:
+          repository: OGGIoao/Pons
+          path: pons-clone
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: pons-web/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+        working-directory: pons-web
+
+      - name: 构建（内容管线 + 子路径 base）
+        run: npm run build
+        working-directory: pons-web
+        env:
+          # 指向内容仓库的 patterns 目录，管线据此生成 cards.json
+          PONS_CONTENT_DIR: ${{ github.workspace }}/pons-clone/patterns
+          # vite base = /Pons-web/，让资产在 Pages 子路径下正确加载
+          GH_PAGES: "true"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: pons-web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

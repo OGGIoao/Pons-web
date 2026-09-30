@@ -74,7 +74,7 @@ export function CardPage({ card, openStages = [] }: { card: Card; openStages?: n
 
             {card.image && (
               <figure className="polaroid">
-                <img src={card.image} alt={`${card.name} 的证物照片`} />
+                <img src={import.meta.env.BASE_URL + card.image!.replace(/^\//, '')} alt={`${card.name} 的证物照片`} />
                 <figcaption>证物照片 · {card.no}</figcaption>
               </figure>
             )}

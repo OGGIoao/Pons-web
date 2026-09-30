@@ -26,7 +26,7 @@ function Drawer({ id, no, name, oneliner, stamp, image }: {
       <div className="label-holder">NO.{no} {name.slice(0, 10)}</div>
       <div className="handle" />
       <div className="slot-card">
-        {image && <img className="stamp-img" src={image} alt="" />}
+        {image && <img className="stamp-img" src={import.meta.env.BASE_URL + image.replace(/^\//, '')} alt="" />}
         <div className="no">3×5 INDEX · {no}</div>
         <h3>{name}</h3>
         <p>{oneliner ?? ''}</p>
