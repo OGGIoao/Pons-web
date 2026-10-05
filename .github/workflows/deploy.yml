@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # 内容仓库 push 后经 repository_dispatch 触发（见 Pons 仓 check.yml）
+  repository_dispatch:
+    types: [content-updated]
   workflow_dispatch:
 
 permissions:
