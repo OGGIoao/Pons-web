@@ -59,8 +59,8 @@ OGGIoao/Pons-web    ← 本站：管线 + React UI（只读生成物）
 ```
 
 **改内容永远只动 Pons 仓库**；本站仓库只关心展示和交互。
-push 本站 → Pages 自动重新构建部署；push Pons（内容）后 → 到本站 Actions 手动 Run 一次
-`Deploy to GitHub Pages`，即会用最新内容重建（两边均已按此口径描述，见 Pons 仓 README 的「两个仓库」）。
+push 本站 → Pages 自动重新构建部署；push Pons（内容）→ 其 CI 自检通过后会自动
+触发本工作流重建，全程无需手动操作（见 Pons 仓 README 的「两个仓库」）。
 
 ## 内容协作（加东西 = 丢文件，零登记）
 
