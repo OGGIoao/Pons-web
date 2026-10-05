@@ -3,6 +3,7 @@ import { Markdown } from '../components/Markdown'
 import { PracticePad } from '../components/PracticePad'
 import { CodeRunner } from '../components/CodeRunner'
 import { CaseList } from '../components/CaseList'
+import { SparkBox } from '../components/SparkBox'
 import { cards, progressRepo } from '../data'
 import { STAGE_LABEL } from '../data/repository'
 import type { Card, ProgressStage } from '../data/types'
@@ -94,6 +95,7 @@ export function CardPage({ card, openStages = [] }: { card: Card; openStages?: n
                   {i === 1 && <PracticePad cardId={card.id} />}
                   {i === 2 && <CodeRunner card={card} />}
                   {i === 2 && card.cases.length > 0 && <CaseList card={card} />}
+                  {i === 2 && <SparkBox card={card} />}
                 </div>
               </details>
             ))}

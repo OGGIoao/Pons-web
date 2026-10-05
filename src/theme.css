@@ -394,3 +394,98 @@ details.case-item[open] summary { border-bottom: 1px dashed #c9b989; }
   color: var(--ink-faint); margin-bottom: 6px;
 }
 .case-solution .md pre { margin: 0 0 4px; }
+
+/* ---------- 读者火花（卡页）与火花信箱（首页） ---------- */
+/* 世界观：作者表格是铜版印刷体，火花是读者的铅笔批注 */
+.spark-box {
+  margin-top: 26px; padding: 16px 20px 18px;
+  border: 1.5px dashed #a8946a; border-radius: 4px;
+  background: rgba(255, 253, 244, .45);
+}
+.spark-head {
+  font-family: "Kaiti SC", "STKaiti", cursive; font-size: 16px;
+  color: var(--ink); letter-spacing: .1em;
+}
+.spark-head .spark-sub {
+  font-size: 11.5px; color: var(--ink-faint); letter-spacing: .02em;
+  font-family: "PingFang SC", sans-serif; margin-left: 10px;
+}
+.spark-empty { font-size: 12.5px; color: var(--ink-faint); font-family: "PingFang SC", sans-serif; margin: 8px 0 0; }
+.spark-list { list-style: none; margin: 10px 0 0; padding: 0; }
+.spark-note {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding: 7px 4px; border-bottom: 1px dashed rgba(163, 147, 122, .5);
+  font-family: "Kaiti SC", "STKaiti", cursive; font-size: 14.5px;
+  color: #33406b; /* 铅笔蓝 */
+  transform: rotate(-.2deg);
+}
+.spark-note:nth-child(2n) { transform: rotate(.25deg); }
+.spark-link {
+  font-family: var(--mono); font-size: 11.5px; color: var(--stamp-green);
+  text-decoration: none; border-bottom: 1px dotted var(--stamp-green);
+}
+.spark-link:hover { background: rgba(30, 107, 70, .08); }
+.spark-wish { font-family: var(--mono); font-size: 11.5px; color: #a07c1e; }
+.spark-del {
+  margin-left: auto; background: none; border: none; cursor: pointer;
+  color: var(--ink-faint); font-size: 12px; padding: 0 2px;
+}
+.spark-del:hover { color: var(--seal-red); }
+.spark-add {
+  margin-top: 12px; background: none; cursor: pointer;
+  border: 1.5px dashed #a8946a; border-radius: 3px;
+  color: var(--ink-soft); padding: 7px 16px;
+  font-family: "Kaiti SC", "STKaiti", cursive; font-size: 14px;
+}
+.spark-add:hover { color: var(--ink); border-color: var(--ink-soft); }
+.spark-form { margin-top: 12px; display: grid; gap: 10px; }
+.spark-form input[type="text"], .spark-form select {
+  background: #fffef8; border: none; border-bottom: 1.5px dashed #a8946a;
+  padding: 8px 6px; font-family: "Kaiti SC", "STKaiti", cursive;
+  font-size: 14px; color: var(--ink); border-radius: 0;
+}
+.spark-form input:focus, .spark-form select:focus { outline: none; border-bottom-color: var(--brass); }
+.spark-form-actions { display: flex; gap: 10px; align-items: center; }
+.spark-submit {
+  background: var(--ink); color: var(--paper); border: none; cursor: pointer;
+  font-family: var(--mono); font-size: 12px; letter-spacing: .12em;
+  padding: 8px 18px; border-radius: 3px;
+}
+.spark-submit:disabled { opacity: .45; cursor: not-allowed; }
+.spark-submit:hover:not(:disabled) { background: #4a3a28; }
+.spark-cancel {
+  background: none; border: none; cursor: pointer;
+  font-family: "PingFang SC", sans-serif; font-size: 12.5px; color: var(--ink-faint);
+}
+.spark-cancel:hover { color: var(--ink-soft); }
+
+/* 火花信箱：黄铜包边的木柜嵌槽，愿望的聚合视图 */
+.mailbox {
+  margin: 10px 0 40px; padding: 20px 24px;
+  border: 2px solid var(--brass); border-radius: 6px;
+  background: linear-gradient(180deg, rgba(201, 162, 39, .08), rgba(0, 0, 0, .18));
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .35);
+}
+.mailbox-head {
+  font-family: var(--mono); letter-spacing: .25em;
+  font-size: 14px; color: var(--brass);
+}
+.mailbox ul { list-style: none; margin: 12px 0 0; padding: 0; }
+.mailbox li {
+  padding: 7px 0; color: rgba(240, 230, 200, .88); font-size: 14px;
+  border-bottom: 1px dashed rgba(240, 230, 200, .15);
+  font-family: "Kaiti SC", "STKaiti", cursive; letter-spacing: .05em;
+}
+.mailbox-count {
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(240, 230, 200, .45); margin-left: 8px; letter-spacing: .05em;
+}
+.mailbox-empty {
+  margin: 10px 0 0; font-size: 12.5px; line-height: 1.9;
+  color: rgba(240, 230, 200, .5); font-family: "PingFang SC", sans-serif;
+}
+.mailbox-note {
+  display: block; margin-top: 14px;
+  font-size: 10.5px; color: rgba(240, 230, 200, .3);
+  font-family: var(--mono); letter-spacing: .18em;
+}

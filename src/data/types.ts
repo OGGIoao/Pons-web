@@ -57,3 +57,14 @@ export interface CardProgress {
   code?: string // 练习台里用户写的代码
   updatedAt: string // ISO
 }
+
+/** 读者火花：用户在「这个模式还出现在……」下记录的迁移联想。
+ *  linkNo 指向已有关联卡；null 表示"这张卡还不存在"→ 愿望，进火花信箱 */
+export interface Spark {
+  id: string
+  cardId: string // 火花挂在哪张卡（Card.id）
+  text: string // 一句话：这个模式还出现在……
+  linkNo: string | null // 联想到的卡片编号（三位）；null = 愿望
+  wishName: string // linkNo 为 null 时的愿望卡名，否则空串
+  createdAt: string // ISO
+}

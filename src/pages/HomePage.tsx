@@ -1,13 +1,16 @@
 import { useSyncExternalStore } from 'react'
-import { cards, progressRepo } from '../data'
+import { cards, progressRepo, sparkRepo } from '../data'
+import { SPARKS_EVENT } from '../data/sparkRepository'
 import { STAGE_LABEL } from '../data/repository'
-import type { ProgressStage } from '../data/types'
+import type { ProgressStage, Spark } from '../data/types'
 
 function subscribe(cb: () => void) {
   window.addEventListener('pons-progress', cb)
+  window.addEventListener(SPARKS_EVENT, cb)
   window.addEventListener('storage', cb)
   return () => {
     window.removeEventListener('pons-progress', cb)
+    window.removeEventListener(SPARKS_EVENT, cb)
     window.removeEventListener('storage', cb)
   }
 }
@@ -16,6 +19,12 @@ function subscribe(cb: () => void) {
 function useProgressSnapshot(): Record<string, { stage: ProgressStage }> {
   const snap = useSyncExternalStore(subscribe, () => JSON.stringify(progressRepo.all()))
   return JSON.parse(snap) as Record<string, { stage: ProgressStage }>
+}
+
+/** 火花快照 */
+function useSparkSnapshot(): Spark[] {
+  const snap = useSyncExternalStore(subscribe, () => JSON.stringify(sparkRepo.all()))
+  return JSON.parse(snap) as Spark[]
 }
 
 function Drawer({ id, no, name, oneliner, stamp, image }: {
@@ -42,7 +51,20 @@ function Drawer({ id, no, name, oneliner, stamp, image }: {
 
 export function HomePage() {
   const progress = useProgressSnapshot()
+  const sparks = useSparkSnapshot()
   const stageOf = (id: string): ProgressStage => progress[id]?.stage ?? 'new'
+
+  // 愿望单：linkNo 为 null 的火花按 wishName 聚合，成为下一张卡的选题池
+  const wishGroups = new Map<string, { count: number; from: Set<string> }>()
+  for (const s of sparks) {
+    if (s.linkNo !== null || !s.wishName) continue
+    const g = wishGroups.get(s.wishName) ?? { count: 0, from: new Set<string>() }
+    g.count += 1
+    g.from.add(s.cardId)
+    wishGroups.set(s.wishName, g)
+  }
+  const wishes = [...wishGroups.entries()].sort((a, b) => b[1].count - a[1].count)
+  const cardName = (id: string) => cards.find((c) => c.id === id)?.no ?? id
 
   const core = cards.filter((c) => c.seq === 'core')
   const cross = cards.filter((c) => c.seq === 'cross')
@@ -77,6 +99,26 @@ export function HomePage() {
         {cross.map((c) => (
           <Drawer key={c.id} id={c.id} no={c.no} name={c.name} oneliner={c.oneliner} stamp={stageOf(c.id)} image={c.image} />
         ))}
+      </div>
+
+      <div className="mailbox">
+        <div className="mailbox-head">✉️ 火花信箱</div>
+        {wishes.length === 0 ? (
+          <p className="mailbox-empty">
+            信箱还空着。在任意卡片的「这个模式还出现在……」下添一朵火花，
+            如果想到的卡还没写，填上它的名字——愿望会投进这里。
+          </p>
+        ) : (
+          <ul>
+            {wishes.map(([name, g]) => (
+              <li key={name}>
+                「{name}」
+                <span className="mailbox-count"> × {g.count} 人想看 · 来自 { [...g.from].map(cardName).join('、') }</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <span className="mailbox-note">本地愿望池 · 接后端后成为共享选题池</span>
       </div>
 
       <p className="foot-note">PONS · {cards.length} 张卡 · 内容源 patterns/*.md 构建期解析</p>

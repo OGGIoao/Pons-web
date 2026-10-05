@@ -79,6 +79,7 @@ push 本站 → Pages 自动重新构建部署；push Pons（内容）→ 其 CI
 
 - **内容管线** `scripts/build-cards.mjs`：markdown → `cards.json`。练习台骨架只取顶层 `def` 签名，且每张卡的骨架都要过一遍 Python 编译——半成品进不了站点
 - **进度层** `src/data/repository.ts` 的 `ProgressRepository` 接口：现在是 localStorage 实现，将来上后端只需新实现一个 `ApiRepository`，改 `src/data/index.ts` 一行
+- **火花层** `src/data/sparkRepository.ts` 的 `SparkRepository` 接口：读者在「这个模式还出现在……」下添的迁移联想（可深链关联卡，也可许愿不存在的卡进首页火花信箱）；同为 localStorage 实现，接后端即成共享选题池
 - **语法高亮 SSOT**：highlight.js（markdown）与 CodeMirror（练习台）消费同一份 `--tok-*` 调色板
 - **路由**：hash 路由（`#/card/001?open=3,4`），静态托管友好，支持深链直达某张卡的某个阶段
 
